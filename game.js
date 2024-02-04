@@ -8,15 +8,21 @@ var playerBuffer;
 let levels;
 let currentLevel = 0;
 let playerLights = [];
+let gameShader;
 
 function preload() {
   levels = loadJSON('./levels.json');
+  gameShader = loadShader('/shaders/game.vert', '/shaders/game.frag');
 }
 
-function generateRandomLight() {
+function generateStartingPosition() {
+  // start with a random number, in the future it should be
+  // far from the other lights
+  // far not inside any obstacles
+  // not inside the goal
   return {
-    x: Math.random() * (400 - margin) + margin/2,
-    y: Math.random() * (400 - margin) + margin/2
+    x: Math.random() * (400 - margin) + margin / 2,
+    y: Math.random() * (400 - margin) + margin / 2
   }
 }
 
@@ -24,15 +30,13 @@ function setup() {
   // 800 x 400 (double width to make room for each "sub-canvas")
   createCanvas(800, 400);
   for(let i = 0; i < levels[currentLevel].lights.length; i++) {
-    playerLights.push(generateRandomLight());
+    playerLights.push(generateStartingPosition());
   }
   // Create both of your off-screen graphics buffers
   referenceBuffer = createGraphics(400, 400);
   playerBuffer = createGraphics(400, 400);
 
   // draw the background and the border
-  fill("#62A6A9");
-  rect(0, 0, 800, 400);
   fill(0, 0, 0);
   rect(400, 0, 10, 400);
 
