@@ -1,12 +1,20 @@
-uniform float v[10];
+precision mediump float;
 
-const background = vec4(0.243, 0.651, 0.663, 1.0);
+uniform sampler2D background;
+varying vec2 pos;
+
+const vec4 black = vec4(0.0, 0.0, 0.0, 1.0);
 
 void main() {
-  // if we're too far from any point, just use the background color
-  // if we're inside a correct level, color it white
-  // if we're inside a player, color it red
-  // if the player is actually right, color it green
-  // if we're inside the border, color it back
-  gl_FragColor = background;
+  // by default everything is the background
+  vec4 color = texture2D(background, pos);
+  float shadowAmount = 0.0;
+
+  // depending on what side of the border we're on, either ray trace
+  // to the player or level lights, with dimming effect depending
+  // on the distance to the light
+  // if we're blocked by any obstacles, we're in a shadow
+
+  
+  gl_FragColor = mix(color, black, shadowAmount);
 }

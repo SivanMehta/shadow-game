@@ -1,10 +1,12 @@
 const lightSize = 20;
 const green = [0, 255, 0];
 const red = [255, 0, 0];
+const backgroundColour = [0, 100, 100];
 const margin = 50;
+const height = 400;
+const width = 800;
 
-var referenceBuffer;
-var playerBuffer;
+let backgroundBuffer, lightBuffer, finalScreen;
 let levels;
 let currentLevel = 0;
 let playerLights = [];
@@ -26,6 +28,15 @@ function generateStartingPosition() {
   }
 }
 
+function generateBackground() {
+  // background
+  backgroundBuffer.background(...backgroundColour);
+  backgroundBuffer.noStroke();
+  // game border
+  backgroundBuffer.fill(0);
+  backgroundBuffer.rect(395, 0, 10, 400);
+}
+
 function setup() {
   // 800 x 400 (double width to make room for each "sub-canvas")
   createCanvas(800, 400);
@@ -33,27 +44,17 @@ function setup() {
     playerLights.push(generateStartingPosition());
   }
   // Create both of your off-screen graphics buffers
-  referenceBuffer = createGraphics(400, 400);
-  playerBuffer = createGraphics(400, 400);
+  backgroundBuffer = createGraphics(width, height);
+  lightBuffer = createGraphics(width, height);
+  finalScreen = createGraphics(width, height, WEBGL);
 
   // draw the background and the border
-  fill(0, 0, 0);
-  rect(400, 0, 10, 400);
+  generateBackground();
 
+  finalScreen.shader(gameShader);
 }
 
-function draw() {
-  // Draw on your buffers however you like
-  drawReferenceBuffer();
-  drawPlayerBuffer();
-
-  // Paint the off-screen buffers onto the main canvas
-  image(referenceBuffer, 0, 0);
-  image(playerBuffer, 400, 0);
-
-}
-
-function drawReferenceBuffer() {
+function drawLights() {
   // draw background
   // referenceBuffer.background(0, 0, 0);
   
@@ -64,16 +65,23 @@ function drawReferenceBuffer() {
     let light = levels[currentLevel].lights[i];
     referenceBuffer.ellipse(light.x, light.y, lightSize);
   }
-}
-
-function drawPlayerBuffer() {
-  // playerBuffer.background(255, 100, 255);
   
-  // draw each light in the level in white, expect
+  // draw each player light in red
   playerBuffer.fill(...red);
   playerBuffer.noStroke();
   for (let i = 0; i < playerLights.length; i++) {
     let light = playerLights[i];
     playerBuffer.ellipse(light.x, light.y, lightSize);
   }
+}
+
+function draw() {
+  // Draw on your buffers however you like
+  // drawLights();
+  gameShader.setUniform("background", backgroundBuffer);
+
+  finalScreen.clear();
+  finalScreen.rect(0, 0, width, height);
+  // Paint the off-screen buffers onto the main canvas
+  image(finalScreen, 0, 0);
 }
