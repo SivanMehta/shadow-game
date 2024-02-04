@@ -1,5 +1,5 @@
 const noiseScale = 0.01;
-const s = 1; // pixels per tile
+const pixelScale = 1; // pixels per tile
 const waterLevel = 0.3;
 
 let w, h;
@@ -14,13 +14,12 @@ function preload() {
   shadowShader = loadShader("/shaders/shader.vert", "/shaders/shader.frag");
 }
 
-
 function setup() {
   createCanvas(600, 600);
   noSmooth();
   
-  w = width/s;
-  h = height/s;
+  w = width/pixelScale;
+  h = height/pixelScale;
   
   // create a graphics objects for height map and colour map
   heightMap = createGraphics(w, h); 
