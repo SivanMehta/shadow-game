@@ -1,4 +1,4 @@
-const lightSize = 20;
+const lightSize = 25;
 const green = [0, 255, 0];
 const red = [255, 0, 0];
 const backgroundColour = [0, 50, 50];
@@ -83,6 +83,27 @@ function attemptToCaptureLight() {
   }
 }
 
+function closeToGoal() {
+  const heldLight = [
+    playerLights[interaction.holdingLight],
+    playerLights[interaction.holdingLight + 1]
+  ];
+
+  for (let i = 0; i < levels[currentLevel].lights.length; i++) {
+    const tolerance = lightSize;
+    const goalLight = levels[currentLevel].lights[i];
+    const goalCoords = [
+      800 + goalLight.x,
+      goalLight.y
+    ]
+    const distanceToGoal = distance(goalCoords, heldLight);
+
+    if(distanceToGoal < tolerance) {
+      return true;
+    }
+  }
+}
+
 function moveLight() {
   if(isNaN(interaction.holdingLight)) {
     return;
@@ -90,6 +111,12 @@ function moveLight() {
 
   playerLights[interaction.holdingLight] = mouseX * 2;
   playerLights[interaction.holdingLight + 1] = mouseY * 2;
+
+  if(closeToGoal()) {
+    playerLights[interaction.holdingLight + 2] = 1;
+  } else {
+    playerLights[interaction.holdingLight + 2] = 0;
+  }
   
   rerender();
 }
