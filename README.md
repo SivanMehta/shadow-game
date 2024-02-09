@@ -7,9 +7,10 @@ around to match the reference image.
 
 ## Todo
 
+- [x] Setup a level with one light
+- [x] Setup a level with 2-3 lights
+- [x] Finish shaders for 1 level
 - [ ] Add a way to win
-- [ ] Setup a level with one light
-- [ ] Setup a level with 2-3 lights
 - [ ] Setup a way to navigate levels
 
 ## References
