@@ -1,4 +1,4 @@
-const lightSize = 25;
+const lightSize = 20;
 const green = [0, 255, 0];
 const red = [255, 0, 0];
 const backgroundColour = [0, 50, 50];
@@ -10,6 +10,7 @@ let levels;
 let currentLevel = 0;
 let playerLights = [];
 let gameShader;
+let canvas;
 
 function preload() {
   levels = loadJSON('./levels.json');
@@ -47,8 +48,65 @@ function lightsAsMatrix(lights) {
   return matrix;
 }
 
+const interaction = {
+  mouseDown: false,
+  holdingLight: NaN,
+  entry: []
+};
+
+function mouseDown() {
+  interaction.mouseDown = true;
+  attemptToCaptureLight();
+}
+
+function mouseUp() {
+  interaction.mouseDown = false;
+  interaction.entry = [];
+  interaction.holdingLight = NaN;
+}
+
+function distance(a, b) {
+  return Math.sqrt(
+    Math.pow(a[0] - b[0], 2) + Math.pow(a[1] - b[1], 2)
+  );
+}
+
+function attemptToCaptureLight() {
+  for(let i = 0; i < playerLights.length; i += 3) {
+    const light = [playerLights[i], playerLights[i + 1]];
+    const distanceToLight = distance([mouseX * 2, mouseY * 2], light);
+
+    if(distanceToLight < lightSize) {
+      interaction.holdingLight = i;
+      break;
+    }
+  }
+}
+
+function moveLight() {
+  if(isNaN(interaction.holdingLight)) {
+    return;
+  }
+
+  playerLights[interaction.holdingLight] = mouseX * 2;
+  playerLights[interaction.holdingLight + 1] = mouseY * 2;
+  
+  rerender();
+}
+
+function mouseMoved() {
+  // see if we can capture a light
+  if(interaction.mouseDown) {
+    moveLight();
+  }
+}
+
 function setup() {
-  createCanvas(window.innerHeight, window.innerWidth);
+  canvas = createCanvas(window.innerHeight, window.innerWidth);
+  canvas.mousePressed(mouseDown);
+  canvas.mouseReleased(mouseUp);
+  canvas.mouseMoved(mouseMoved);
+  
   for(let i = 0; i < levels[currentLevel].lights.length; i++) {
     playerLights.push(...generateStartingPosition());
   }
@@ -57,6 +115,8 @@ function setup() {
   lightBuffer = createGraphics(width, height);
   finalScreen = createGraphics(width, height, WEBGL);
 
+  // Draw on your buffers however you like
+  gameShader.setUniform("background", backgroundBuffer);
   // draw the background and the border
   generateBackground();
 
@@ -64,16 +124,15 @@ function setup() {
 
   const lightMatrix = lightsAsMatrix(levels[currentLevel].lights);
   gameShader.setUniform("lights", lightMatrix);
-  gameShader.setUniform("playerLights", playerLights)
+  gameShader.setUniform("playerLights", playerLights);
   gameShader.setUniform("lightSize", lightSize);
+}
 
-  console.log(lightMatrix, playerLights)
+function rerender() {
+  gameShader.setUniform("playerLights", playerLights);
 }
 
 function draw() {
-  // Draw on your buffers however you like
-  gameShader.setUniform("background", backgroundBuffer);
-
   finalScreen.clear();
   finalScreen.rect(0, 0, width, height);
   // Paint the off-screen buffers onto the main canvas

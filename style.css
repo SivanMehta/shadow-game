@@ -1,7 +1,8 @@
 html, body {
   margin: 0;
   padding: 0;
-  background-color: rgba(0, 50, 50);
+  background-color: black;
+  color: white;
 }
 canvas {
   display: block;
