@@ -2,6 +2,7 @@ precision mediump float;
 
 uniform sampler2D colour;
 uniform sampler2D height;
+
 uniform vec3 sunPos;
 varying vec2 pos;
 const float maxBrightness = 0.5;

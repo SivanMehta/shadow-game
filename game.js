@@ -1,8 +1,7 @@
-const lightSize = 20;
+const lightSize = 25;
 const green = [0, 255, 0];
 const red = [255, 0, 0];
-const backgroundColour = [0, 100, 100];
-const margin = 50;
+const backgroundColour = [0, 50, 50];
 const height = 400;
 const width = 800;
 
@@ -22,10 +21,11 @@ function generateStartingPosition() {
   // far from the other lights
   // far not inside any obstacles
   // not inside the goal
-  return {
-    x: Math.random() * (400 - margin) + margin / 2,
-    y: Math.random() * (400 - margin) + margin / 2
-  }
+  return [
+    800 + Math.random() * (800 - lightSize * 2),
+    Math.random() * (800 - lightSize * 2),
+    0
+  ]
 }
 
 function generateBackground() {
@@ -37,11 +37,20 @@ function generateBackground() {
   backgroundBuffer.rect(395, 0, 10, 400);
 }
 
+function lightsAsMatrix(lights) {
+  const matrix = [];
+  for (let i = 0; i < lights.length; i++) {
+    matrix.push(
+      lights[i].x, lights[i].y, 0.0
+    );
+  }
+  return matrix;
+}
+
 function setup() {
-  // 800 x 400 (double width to make room for each "sub-canvas")
-  createCanvas(800, 400);
+  createCanvas(window.innerHeight, window.innerWidth);
   for(let i = 0; i < levels[currentLevel].lights.length; i++) {
-    playerLights.push(generateStartingPosition());
+    playerLights.push(...generateStartingPosition());
   }
   // Create both of your off-screen graphics buffers
   backgroundBuffer = createGraphics(width, height);
@@ -52,32 +61,17 @@ function setup() {
   generateBackground();
 
   finalScreen.shader(gameShader);
-}
 
-function drawLights() {
-  // draw background
-  // referenceBuffer.background(0, 0, 0);
-  
-  // draw each light in the level in green
-  backgroundBuffer.fill(...green);
-  backgroundBuffer.noStroke();
-  for (let i = 0; i < levels[currentLevel].lights.length; i++) {
-    let light = levels[currentLevel].lights[i];
-    backgroundBuffer.ellipse(light.x, light.y, lightSize);
-  }
-  
-  // draw each player light in red
-  backgroundBuffer.fill(...red);
-  backgroundBuffer.noStroke();
-  for (let i = 0; i < playerLights.length; i++) {
-    let light = playerLights[i];
-    backgroundBuffer.ellipse(400 + light.x, light.y, lightSize);
-  }
+  const lightMatrix = lightsAsMatrix(levels[currentLevel].lights);
+  gameShader.setUniform("lights", lightMatrix);
+  gameShader.setUniform("playerLights", playerLights)
+  gameShader.setUniform("lightSize", lightSize);
+
+  console.log(lightMatrix, playerLights)
 }
 
 function draw() {
   // Draw on your buffers however you like
-  drawLights();
   gameShader.setUniform("background", backgroundBuffer);
 
   finalScreen.clear();
