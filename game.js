@@ -59,25 +59,25 @@ function drawLights() {
   // referenceBuffer.background(0, 0, 0);
   
   // draw each light in the level in green
-  referenceBuffer.fill(...green);
-  referenceBuffer.noStroke();
+  backgroundBuffer.fill(...green);
+  backgroundBuffer.noStroke();
   for (let i = 0; i < levels[currentLevel].lights.length; i++) {
     let light = levels[currentLevel].lights[i];
-    referenceBuffer.ellipse(light.x, light.y, lightSize);
+    backgroundBuffer.ellipse(light.x, light.y, lightSize);
   }
   
   // draw each player light in red
-  playerBuffer.fill(...red);
-  playerBuffer.noStroke();
+  backgroundBuffer.fill(...red);
+  backgroundBuffer.noStroke();
   for (let i = 0; i < playerLights.length; i++) {
     let light = playerLights[i];
-    playerBuffer.ellipse(light.x, light.y, lightSize);
+    backgroundBuffer.ellipse(400 + light.x, light.y, lightSize);
   }
 }
 
 function draw() {
   // Draw on your buffers however you like
-  // drawLights();
+  drawLights();
   gameShader.setUniform("background", backgroundBuffer);
 
   finalScreen.clear();
