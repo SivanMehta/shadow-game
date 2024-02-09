@@ -15,7 +15,4 @@ around to match the reference image.
 
 ## References
 
-The game was inspired by [this video](video) and it's associated [code](code)
-
-[video]: https://www.youtube.com/watch?v=bMTeCqNkId8&t=47s
-[code]: https://editor.p5js.org/BarneyCodes/sketches/brfZ0NNpZ
+The game was inspired by [this video](https://www.youtube.com/watch?v=bMTeCqNkId8) and it's associated [code](https://editor.p5js.org/BarneyCodes/sketches/brfZ0NNpZ)
